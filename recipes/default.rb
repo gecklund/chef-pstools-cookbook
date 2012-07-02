@@ -18,19 +18,52 @@
 # limitations under the License.
 #
 
-case node['platform']
+case node[:platform]
 when "windows"
 
-  unless pstools_installed?
-unless
+  #unless pstools_installed?
+    # Create Temporary Directory
+    ["#{node[:pstools][:tempdir]}"].each do |dir|
+      log("create #{dir} directory if necessary") { level :debug }
+      directory "#{dir}" do
+        action :create
+        not_if { File.exists?("#{dir}") }
+        recursive true
+      end
+    end
+
+    # Download PSTools
+    remote_file "#{node[:pstools][:file]}" do      
+      action :create
+      backup false
+      source "#{node[:pstools][:url]}"
+      checksum "#{node[:pstools][:checksum]}"
+      path "#{node[:pstools][:tempdir]}\\#{node[:pstools][:file]}"
+    end
+    
+    # Unzip PSTools
     windows_batch "unzip_pstools" do
       code <<-EOH
-      7z.exe x #{node['pstools']['url']} -o#{node['pstools']['home']} -r -y
+      7z.exe x #{node[:pstools][:tempdir]}\\#{node[:pstools][:file]} -o#{node[:pstools][:home]} -r -y
       EOH
-    end    
-  else
-    Chef::Log.info("PSTools is already installed.")
-  end
+    end  
+      
+    # Update path
+    windows_path node[:pstools][:home] do
+      action :add
+    end
+    
+    # Remove Temporary directory
+    ["#{node[:pstools][:tempdir]}"].each do |dir|
+      log("delete #{dir} directory if necessary") { level :debug }
+      directory "#{dir}" do
+        action :delete
+        recursive true
+      end
+    end
+  #else
+  #  Chef::Log.info("PSTools is already installed.")
+  #end
 else
   Chef::Log.warn('PSTools can only be installed on the Windows platform.')
 end

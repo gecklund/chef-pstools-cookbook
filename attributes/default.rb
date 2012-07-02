@@ -1,2 +1,5 @@
-default['pstools']['url']     = "http://download.sysinternals.com/files/PSTools.zip"
-default['pstools']['home']    = "#{ENV['SYSTEMDRIVE']}\\pstools"
+default[:pstools][:url]      = "http://download.sysinternals.com/files/PSTools.zip"
+default[:pstools][:checksum] = "60fdaac1fc4ae62003c6222592860076cc552dea29cd4c02a6f6e41cec375dfb"
+default[:pstools][:tempdir]  = "#{ENV['TEMP']}"
+default[:pstools][:file]     = "PSTools.zip"
+default[:pstools][:home]     = "#{ENV['SYSTEMDRIVE']}\\pstools"
