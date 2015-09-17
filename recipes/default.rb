@@ -36,7 +36,7 @@ when "windows"
 		windows_zipfile "#{node[:pstools][:home]}" do
 			action :unzip
 			overwrite true
-			source "#{node[:pstools][:file]}"
+			source "#{node[:pstools][:url]}"
 		end
 
     # Update path
